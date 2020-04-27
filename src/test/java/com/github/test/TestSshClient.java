@@ -1,4 +1,4 @@
-package com.anchora.sre.service;
+package com.github.test;
 
 import static org.junit.Assert.assertArrayEquals;
 

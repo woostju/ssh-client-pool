@@ -11,6 +11,7 @@ import com.github.woostju.ssh.SshClientEventListener;
 import com.github.woostju.ssh.SshClientFactory;
 import com.github.woostju.ssh.SshClientState;
 import com.github.woostju.ssh.SshResponse;
+import com.github.woostju.ssh.config.SshClientPoolConfig;
 import com.github.woostju.ssh.exception.SshException;
 
 public class SshClientWrapper implements SshClientEventListener{
@@ -37,10 +38,10 @@ public class SshClientWrapper implements SshClientEventListener{
 		return this.config;
 	}
 	
-	public SshClientWrapper(SshClientConfig config) {
+	public SshClientWrapper(SshClientConfig config, SshClientPoolConfig poolConfig) {
 		this.id = UUID.randomUUID().toString();
 		this.config = config;
-		this.client = SshClientFactory.newInstance(config);
+		this.client = SshClientFactory.newInstance(config, poolConfig);
 	}
 	
 	public SshClientWrapper setEventListener(SshClientEventListener listener) {

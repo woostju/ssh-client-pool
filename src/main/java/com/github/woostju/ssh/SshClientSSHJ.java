@@ -67,9 +67,9 @@ public class SshClientSSHJ implements SshClient {
 	
 	private SshClientEventListener eventListener;
 	
-	public static String COMMAND_PROMOT_REGEX_STR = "[\\[]?.+@.+~[\\]]?[#\\$] *";
+	public String commandPromotRegexStr = "[\\[]?.+@.+~[\\]]?[#\\$] *";
 	
-	private static Matcher<Result> COMMAND_PROMOT_REGEX = regexp(COMMAND_PROMOT_REGEX_STR);
+	public Matcher<Result> commandPromotRegex = regexp(commandPromotRegexStr);
 	
 	// initialize DefaultConfig will consume resources, so we should cache it
 	private static DefaultConfig defaultConfig = null;
@@ -79,6 +79,11 @@ public class SshClientSSHJ implements SshClient {
 			defaultConfig = new DefaultConfig();
 		}
 		return defaultConfig;
+	}
+	
+	public void setCommandPromotRegexStr(String promot) {
+		this.commandPromotRegexStr = promot;
+		this.commandPromotRegex = regexp(this.commandPromotRegexStr);
 	}
 	
 	@Override
@@ -186,7 +191,7 @@ public class SshClientSSHJ implements SshClient {
 				shell = session.startShell();
 				shell.changeWindowDimensions(1024, 1024, 20, 20);
 				this.renewExpect(60);
-				expect.expect(COMMAND_PROMOT_REGEX);
+				expect.expect(commandPromotRegex);
 			}
 			this.state = SshClientState.connected;
 			try {
@@ -223,7 +228,7 @@ public class SshClientSSHJ implements SshClient {
 	 * if not in shell mode, code in response 1 represents fail, 0 represents success
 	 */
 	@Override
-	public synchronized SshResponse executeCommand(String command, int timeoutInSeconds) {
+	public SshResponse executeCommand(String command, int timeoutInSeconds) {
 		if (this.shellMode) {
 			return this.sendCommand(command, timeoutInSeconds);
 		} else {
@@ -298,7 +303,7 @@ public class SshClientSSHJ implements SshClient {
 				logger.debug(this + " command \\n sent ");
 			}
 			Result result2 = expect.expect(contains(command));
-			Result result = expect.expect(COMMAND_PROMOT_REGEX);
+			Result result = expect.expect(commandPromotRegex);
 			logger.debug("command execute success with raw output");
 			logger.debug("------------------------------------------");
 			String[] inputArray = result.getInput().split("\\r\\n");
@@ -306,7 +311,7 @@ public class SshClientSSHJ implements SshClient {
 			if(inputArray.length>0) {
 				for(int i=0;i<inputArray.length;i++) {
 					logger.debug(inputArray[i]);
-					if(i==inputArray.length-1 && inputArray[i].matches(COMMAND_PROMOT_REGEX_STR)) {
+					if(i==inputArray.length-1 && inputArray[i].matches(commandPromotRegexStr)) {
 						break;
 					}
 					stout.add(inputArray[i]);
@@ -377,7 +382,7 @@ public class SshClientSSHJ implements SshClient {
 		try {
 			logger.debug("send ctr-c command ... ");
 			expect.send("\03");
-			expect.expect(COMMAND_PROMOT_REGEX);
+			expect.expect(commandPromotRegex);
 			logger.debug("send ctr-c command success ");
 		} catch (IOException e1) {
 			logger.error("send ctrl+c command fail", e1);
