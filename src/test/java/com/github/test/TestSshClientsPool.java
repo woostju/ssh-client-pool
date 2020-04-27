@@ -15,14 +15,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.github.woostju.ssh.SshClientConfig;
-import com.github.woostju.ssh.SshClientSSHJ;
 import com.github.woostju.ssh.SshResponse;
 import com.github.woostju.ssh.config.SshClientPoolConfig;
+import com.github.woostju.ssh.pool.SshClientWrapper;
+import com.github.woostju.ssh.pool.SshClientsPool;
 import com.github.woostju.ssh.multithread.JobExecutor;
 import com.github.woostju.ssh.multithread.JobExecutorState;
 import com.github.woostju.ssh.multithread.SyncThreadPool;
-import com.github.woostju.ssh.pool.SshClientWrapper;
-import com.github.woostju.ssh.pool.SshClientsPool;
 
 public class TestSshClientsPool {
 	
