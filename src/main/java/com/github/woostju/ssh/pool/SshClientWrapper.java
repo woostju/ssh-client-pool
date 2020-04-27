@@ -14,6 +14,12 @@ import com.github.woostju.ssh.SshResponse;
 import com.github.woostju.ssh.config.SshClientPoolConfig;
 import com.github.woostju.ssh.exception.SshException;
 
+/**
+ * A wrapper class of {@link SshClient} used by {@link SshClientsPool}
+ * 
+ * @author jameswu
+ *
+ */
 public class SshClientWrapper implements SshClientEventListener{
 	
 	private final static Logger logger = LoggerFactory.getLogger(SshClientWrapper.class);

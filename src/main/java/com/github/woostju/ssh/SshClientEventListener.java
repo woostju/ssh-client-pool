@@ -2,25 +2,27 @@ package com.github.woostju.ssh;
 
 /**
  * 
- * used by SshClientPool to manage the SshClient state
+ * Set listener to a SshClient by {@link SshClient#setEventListener(SshClientEventListener)}
  * @author jameswu
  *
  */
 public interface SshClientEventListener {
 	
 	/**
-	 * 
-	 * @param client
+	 * after SshClient finished executing command
+	 * @param client the ssh client
 	 */
 	public void didExecuteCommand(Object client);
+	
 	/**
-	 * 
-	 * @param client
+	 * after SshClient disconnnect from the remote server
+	 * @param client the ssh client
 	 */
 	public void didDisConnected(Object client);
+	
 	/**
-	 * 
-	 * @param client
+	 * after SshClient start the ssh session 
+	 * @param client the ssh client
 	 */
 	public void didConnected(Object client);
 }

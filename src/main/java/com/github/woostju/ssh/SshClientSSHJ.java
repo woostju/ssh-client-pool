@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.woostju.ssh.config.SshClientPoolConfig;
 import com.github.woostju.ssh.exception.AuthException;
 import com.github.woostju.ssh.exception.LostConnectionException;
 import com.github.woostju.ssh.exception.SshException;
@@ -38,13 +39,14 @@ import static net.sf.expectit.matcher.Matchers.contains;
 
 /**
  * 
- * implement sshclient with net.schmizz.sshj.SSHClient
+ * build-in {@link SshClient} implementation  with <a href="https://github.com/hierynomus/sshj">hierynomus/SshJ</a>
  * 
+ * <p>Trouble and shooting:
+ * <p>Problem: {@link #authPublickey()} throw exceptions contains "net.schmizz.sshj.common.Buffer$BufferException:Bad item length"
+ * <p>Solution: may caused by key file format issue，use ssh-keygen on a remote Linux server to generate the key
+ *         
+ *         
  * @author jameswu
- * 
- *         Trouble and shooting: 1. authPublicKey throw exceptions contains
- *         "net.schmizz.sshj.common.Buffer$BufferException:Bad item length"
- *         很可能是id_rsa文件格式，建议使用linux服务的ssh-keygen生成公钥私钥
  *
  */
 public class SshClientSSHJ implements SshClient {
@@ -81,6 +83,12 @@ public class SshClientSSHJ implements SshClient {
 		return defaultConfig;
 	}
 	
+	/**
+	 * used in shell mode, once it start session with server, the server will return promot to client
+	 * <p>the promot looks like [centos@ip-172-31-31-82 ~]$
+	 * <p>if the build-in one does not fit, you can change it by {@link SshClientPoolConfig#setServerCommandPromotRegex(String)}
+	 * @param promot used to match promot from server
+	 */
 	public void setCommandPromotRegexStr(String promot) {
 		this.commandPromotRegexStr = promot;
 		this.commandPromotRegex = regexp(this.commandPromotRegexStr);
@@ -98,9 +106,6 @@ public class SshClientSSHJ implements SshClient {
 		}
 	}
 	
-	/**
-	 * 创建 ssh连接
-	 */
 	@Override
 	public SshClient connect(int timeoutInSeconds) throws SshException{
 		this.validate();
@@ -113,7 +118,7 @@ public class SshClientSSHJ implements SshClient {
 	}
 	
 	private SshClient connect(int timeoutInSeconds, boolean retry) throws SshException{
-		logger.debug("connecting to " + this.clientConfig.getHost() + " port:" + this.clientConfig.port + " timeout in:"
+		logger.debug("connecting to " + this.clientConfig.getHost() + " port:" + this.clientConfig.getPort() + " timeout in:"
 				+ (timeoutInSeconds / 1000) + " s");
 		client = new SSHClient(getDefaultConfig());
 		try {
@@ -223,10 +228,6 @@ public class SshClientSSHJ implements SshClient {
 		return this;
 	}
 	
-	/**
-	 * in shell mode, if server output content, code in response will be 0
-	 * if not in shell mode, code in response 1 represents fail, 0 represents success
-	 */
 	@Override
 	public SshResponse executeCommand(String command, int timeoutInSeconds) {
 		if (this.shellMode) {
@@ -236,9 +237,6 @@ public class SshClientSSHJ implements SshClient {
 		}
 	}
 
-	/**
-	 * execute the command with session.exec
-	 */
 	private SshResponse executeCommand_(String command, int timeoutInSeconds) {
 		logger.info("execute command: " + command);
 		SshResponse response = new SshResponse();

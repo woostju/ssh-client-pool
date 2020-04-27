@@ -19,26 +19,17 @@ import com.github.woostju.ssh.exception.SshException;
 
 /**
  * 
+ * SshClient objects pool
+ * <p>Cache shell mode connected SshClient in the pools, to save connect time, also improve performance
+ * 
  * @author jameswu
- * 
- * sshClient的对象池
- * 池子中保存了连接上的SshClient
- * 
- * common pool 2
- * 
- * 对每个主机的ssh连接进行池化，以减少创建ssh连接的开销。
- * 但是，因为每台主机可以创建的ssh连接数是有限的，所以我们需要对超过连接数的请求进行阻塞
- * 
  */
 
 public class SshClientsPool extends GenericKeyedObjectPool<SshClientConfig, SshClientWrapper>{
 	private final static Logger logger = LoggerFactory.getLogger(SshClientsPool.class);
 	
-	
-	// 每隔【recycle_window】对idle的client进行销毁
 	static long recycle_window = 120;
 	
-	// 每个主机的工作client数，超过该数，请求新的client需要等待工作client空闲
 	static int core_pool_size = 20;
 	
 	static int client_connect_timeout = 60;
@@ -56,7 +47,7 @@ public class SshClientsPool extends GenericKeyedObjectPool<SshClientConfig, SshC
 	
 	/**
 	 * 
-	 * @param poolConfig
+	 * @param poolConfig create SshClientsPool with {@code poolConfig}
 	 */
 	public SshClientsPool(SshClientPoolConfig poolConfig) {
 		super(new SshClientsObjectFactory(), poolConfig);
@@ -66,16 +57,20 @@ public class SshClientsPool extends GenericKeyedObjectPool<SshClientConfig, SshC
 	
 	/**
 	 * 
-	 * @param maxTotal pool 中允许的最大对象数
-	 * @param maxIdle pool中允许的最大空闲对象数
-	 * @param idleTime 当pool中已经达到最大值并无空闲，请求者将被阻塞MaxWaitMillis时间
-	 * @param maxWaitMillis 阻塞等待时间
-	 * @return
+	 * @param maxTotal max clients in pool
+	 * @param maxIdle max idle clients in pool
+	 * @param idleTime idle time clients live in the pool
+	 * @param maxWaitTime wait time when request block
 	 */
-	public SshClientsPool(int maxTotal, int maxIdle, long idleTime, long maxWaitMillis) {
-		this(new SshClientPoolConfig(maxTotal, maxIdle, idleTime, maxWaitMillis));
+	public SshClientsPool(int maxTotal, int maxIdle, long idleTime, long maxWaitTime) {
+		this(new SshClientPoolConfig(maxTotal, maxIdle, idleTime, maxWaitTime));
 	}
 	
+	/**
+	 * request a connected client from pool, may be a cached one, maybe a brandnew one  
+	 * @param config the connection information to host
+	 * @return
+	 */
 	public SshClientWrapper client(SshClientConfig config) {
 		try {
 			return this.borrowObject(config);
@@ -89,14 +84,14 @@ public class SshClientsPool extends GenericKeyedObjectPool<SshClientConfig, SshC
 		return poolConfig;
 	}
 
+	/**
+	 * query objects with same server connection information
+	 * @param config server connection information
+	 * @return
+	 */
 	public List<DefaultPooledObjectInfo> getObjects(SshClientConfig config) {
 		Map<String, List<DefaultPooledObjectInfo>> objects = listAllObjects();
 		return objects.get(config.toString());
-	}
-	
-	@Override
-	public void clear() {
-		super.clear();
 	}
 	
 }

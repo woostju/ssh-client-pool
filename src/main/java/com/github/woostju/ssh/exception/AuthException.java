@@ -1,5 +1,10 @@
 package com.github.woostju.ssh.exception;
 
+/**
+ * Ssh auth failed
+ * @author jameswu
+ *
+ */
 public class AuthException extends SshException{
 
 	public AuthException(String message) {
@@ -13,6 +18,6 @@ public class AuthException extends SshException{
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -3961871786667342327L;
+	private static final long serialVersionUID = -3961786667342327L;
 
 }

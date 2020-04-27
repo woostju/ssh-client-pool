@@ -1,24 +1,33 @@
 package com.github.woostju.ssh;
 
 import com.github.woostju.ssh.config.SshClientPoolConfig;
-import com.github.woostju.ssh.exception.SshException;
 
 /**
+ * 
+ * Factory of {@link SshClient} implementation
+ * <p> Create a new instance of {@link SshClientSSHJ} with {@link #newInstance(SshClientConfig)}
+ * <p> Create a custom implementation of {@link SshClient} with {@link #newInstance(SshClientConfig, SshClientPoolConfig)}
+ * 
  * @author jameswu
  *
  */
 public class SshClientFactory {
 	
 	/**
-	 * 
+	 * Create a new instance of {@link SshClientSSHJ}
+	 * @param config ssh connection configuration of the remote server 
+	 * @return SshClient in inited state
 	 */
 	public static SshClient newInstance(SshClientConfig config){
 		return newInstance(config, new SshClientPoolConfig());
 	} 
 	
 	/**
-	 * @throws SshException 
-	 * 
+	 * Create a custom implementation of {@link SshClient}
+	 * @param config ssh connection configuration of the remote server 
+	 * @param poolConfig customized configuration
+	 * @return SshClient in inited state
+	 * @throws RuntimeException if SshClientImplClass in {@code poolConfig} is invalid
 	 */
 	public static SshClient newInstance(SshClientConfig config, SshClientPoolConfig poolConfig){
 		if (poolConfig.getSshClientImplClass()==null) {

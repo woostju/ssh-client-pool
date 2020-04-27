@@ -1,4 +1,4 @@
-package com.github.woostju.ssh.multithread;
+package com.github.test.multithread;
 
 import java.util.function.Supplier;
 

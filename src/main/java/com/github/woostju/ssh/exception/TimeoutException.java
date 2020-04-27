@@ -1,5 +1,11 @@
 package com.github.woostju.ssh.exception;
 
+
+/**
+ * Timeout Exception
+ * @author jameswu
+ *
+ */
 public class TimeoutException extends SshException{
 
 	public TimeoutException(String message) {
@@ -13,6 +19,6 @@ public class TimeoutException extends SshException{
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -3961871786667342727L;
+	private static final long serialVersionUID = -39618386667342727L;
 
 }
