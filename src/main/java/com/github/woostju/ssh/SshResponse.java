@@ -16,10 +16,9 @@ public class SshResponse {
 	
 	private Exception exception;
 	
-	private List<String> stdout = new ArrayList<>();
+	private List<String> stdout = new ArrayList<String>();
 	
 	/**
-	 * 
 	 * @return 0
 	 */
 	public int getCode() {

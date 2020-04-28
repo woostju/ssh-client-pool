@@ -2,6 +2,7 @@
 a java implementation of ssh clients object pool with [sshj](https://github.com/hierynomus/sshj), [apache common pool2](https://github.com/apache/commons-pool), [expectIt](https://github.com/Alexey1Gavrilov/ExpectIt)
 
 
+
 ## usage
 
 ssh-client-pool is available from **Maven Central**
@@ -47,10 +48,10 @@ import com.github.woostju.ssh.pool.SshClientsPool;
 SshClientsPool pool;
 
 //---------------------------------------
-public SshResponse echo(){
+public void echo(){
 	SshClientConfig clientConfig = new SshClientConfig("hostip", 22, "username", "password", null);
 	SshClientWrapper client = pool.client(clientConfig);
-	SshResponse response = client.executeCommand("echo '123'", 100);
+	SshResponse response = client.executeCommand("echo 'hi'", 100);
 	return response;
 }
 
@@ -83,7 +84,11 @@ public SshClientsPool sshclientpool() {
 
 SshClientPoolConfig is a subclass of GenericKeyedObjectPool in Apacha Common Pool2, learn more from [apache common pool2](https://github.com/apache/commons-pool) to configure the pool.
 
+### How does it work?
 
+When you request a client from pool, it will pull an idle one, if there is no idle client, a created one return.
+After you execute a command, it will return the client to pool as an idle one.
+If you close the client explicitly, the client will be destroyed and remove from pool.
 
 ## License
 

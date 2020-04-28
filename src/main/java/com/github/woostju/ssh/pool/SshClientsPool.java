@@ -37,9 +37,9 @@ public class SshClientsPool extends GenericKeyedObjectPool<SshClientConfig, SshC
 	static long request_wait_timeout = 120;
 	
 	private SshClientPoolConfig poolConfig;
+	
 	/**
 	 * maxTotal 20, maxIdle 20, idleTime 120 seconds, maxWaitMillis 120 seconds
-	 * @return
 	 */
 	public SshClientsPool() {
 		this(core_pool_size, core_pool_size, recycle_window, request_wait_timeout);
@@ -67,9 +67,9 @@ public class SshClientsPool extends GenericKeyedObjectPool<SshClientConfig, SshC
 	}
 	
 	/**
-	 * request a connected client from pool, may be a cached one, maybe a brandnew one  
+	 * request a connected client from pool, may be a cached one, maybe a brand-new one  
 	 * @param config the connection information to host
-	 * @return
+	 * @return SshClientWrapper
 	 */
 	public SshClientWrapper client(SshClientConfig config) {
 		try {
@@ -87,7 +87,7 @@ public class SshClientsPool extends GenericKeyedObjectPool<SshClientConfig, SshC
 	/**
 	 * query objects with same server connection information
 	 * @param config server connection information
-	 * @return
+	 * @return lists of DefaultPooledObjectInfo with SshClientWrapper inside
 	 */
 	public List<DefaultPooledObjectInfo> getObjects(SshClientConfig config) {
 		Map<String, List<DefaultPooledObjectInfo>> objects = listAllObjects();
