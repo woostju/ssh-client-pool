@@ -20,7 +20,7 @@ public class TestSshClient {
 	
 	private SshClientConfig clientConfig;
 	
-	private String host = "52.80.212.95";
+	private String host = "52.81.83.116";
 	
 	@Before
 	public void init() throws IOException {

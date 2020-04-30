@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import com.github.woostju.ssh.SshClientConfig;
 import com.github.woostju.ssh.SshClientEventListener;
 import com.github.woostju.ssh.SshClientState;
-import com.github.woostju.ssh.config.SshClientPoolConfig;
 import com.github.woostju.ssh.exception.SshException;
 
 /**
@@ -28,21 +27,13 @@ import com.github.woostju.ssh.exception.SshException;
 public class SshClientsPool extends GenericKeyedObjectPool<SshClientConfig, SshClientWrapper>{
 	private final static Logger logger = LoggerFactory.getLogger(SshClientsPool.class);
 	
-	static long recycle_window = 120;
-	
-	static int core_pool_size = 20;
-	
-	static int client_connect_timeout = 60;
-	
-	static long request_wait_timeout = 120;
-	
 	private SshClientPoolConfig poolConfig;
 	
 	/**
-	 * maxTotal 20, maxIdle 20, idleTime 120 seconds, maxWaitMillis 120 seconds
+	 * maxActive 20, maxIdle 20, minIdle 20, maxWaitMillis 40 seconds
 	 */
 	public SshClientsPool() {
-		this(core_pool_size, core_pool_size, recycle_window, request_wait_timeout);
+		this(20, 20, 20, 40*1000l);
 	}
 	
 	/**
@@ -57,13 +48,13 @@ public class SshClientsPool extends GenericKeyedObjectPool<SshClientConfig, SshC
 	
 	/**
 	 * 
-	 * @param maxTotal max clients in pool
+	 * @param maxActive max clients in pool
 	 * @param maxIdle max idle clients in pool
 	 * @param idleTime idle time clients live in the pool
 	 * @param maxWaitTime wait time when request block
 	 */
-	public SshClientsPool(int maxTotal, int maxIdle, long idleTime, long maxWaitTime) {
-		this(new SshClientPoolConfig(maxTotal, maxIdle, idleTime, maxWaitTime));
+	public SshClientsPool(int maxActive, int idle, long idleTime, long maxWaitTime) {
+		this(new SshClientPoolConfig(maxActive, idle, idleTime, maxWaitTime));
 	}
 	
 	/**
@@ -131,7 +122,7 @@ class SshClientsObjectFactory extends BaseKeyedPooledObjectFactory<SshClientConf
 	public SshClientWrapper create(SshClientConfig config) {
 		SshClientWrapper wrapper = new SshClientWrapper(config, pool.getPoolConfig());
 		try {
-			wrapper.setEventListener(this).connect(SshClientsPool.client_connect_timeout).auth().startSession();
+			wrapper.setEventListener(this).connect(60).auth().startSession();
 		} catch (SshException e) {
 			throw new RuntimeException("create ssh client fail");
 		}

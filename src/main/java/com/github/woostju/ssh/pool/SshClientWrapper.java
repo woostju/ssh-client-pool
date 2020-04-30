@@ -11,7 +11,6 @@ import com.github.woostju.ssh.SshClientEventListener;
 import com.github.woostju.ssh.SshClientFactory;
 import com.github.woostju.ssh.SshClientState;
 import com.github.woostju.ssh.SshResponse;
-import com.github.woostju.ssh.config.SshClientPoolConfig;
 import com.github.woostju.ssh.exception.SshException;
 
 /**

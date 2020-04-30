@@ -12,11 +12,11 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.woostju.ssh.config.SshClientPoolConfig;
 import com.github.woostju.ssh.exception.AuthException;
 import com.github.woostju.ssh.exception.LostConnectionException;
 import com.github.woostju.ssh.exception.SshException;
 import com.github.woostju.ssh.exception.TimeoutException;
+import com.github.woostju.ssh.pool.SshClientPoolConfig;
 
 import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.SSHClient;

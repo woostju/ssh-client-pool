@@ -1,6 +1,6 @@
 package com.github.woostju.ssh;
 
-import com.github.woostju.ssh.config.SshClientPoolConfig;
+import com.github.woostju.ssh.pool.SshClientPoolConfig;
 
 /**
  * 
@@ -19,7 +19,7 @@ public class SshClientFactory {
 	 * @return SshClient in inited state
 	 */
 	public static SshClient newInstance(SshClientConfig config){
-		return newInstance(config, new SshClientPoolConfig());
+		return newInstance(config, null);
 	} 
 	
 	/**
@@ -30,13 +30,15 @@ public class SshClientFactory {
 	 * @throws RuntimeException if SshClientImplClass in {@code poolConfig} is invalid
 	 */
 	public static SshClient newInstance(SshClientConfig config, SshClientPoolConfig poolConfig){
-		if (poolConfig.getSshClientImplClass()==null) {
-			poolConfig.setSshClientImplClass(SshClientSSHJ.class);
-		}
 		try {
-			SshClient client = (SshClient)poolConfig.getSshClientImplClass().newInstance();
+			SshClient client = null;
+			if (poolConfig==null || poolConfig.getSshClientImplClass()==null){
+				client = new SshClientSSHJ();
+			}else {
+				client = (SshClient)poolConfig.getSshClientImplClass().newInstance();
+			}
 			client.init(config);
-			if(client instanceof SshClientSSHJ && poolConfig.getServerCommandPromotRegex()!=null) {
+			if(client instanceof SshClientSSHJ && poolConfig!=null && poolConfig.getServerCommandPromotRegex()!=null) {
 				((SshClientSSHJ)client).setCommandPromotRegexStr(poolConfig.getServerCommandPromotRegex());
 			}
 			return client;

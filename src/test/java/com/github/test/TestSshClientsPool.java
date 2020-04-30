@@ -19,7 +19,7 @@ import com.github.test.multithread.JobExecutorState;
 import com.github.test.multithread.SyncThreadPool;
 import com.github.woostju.ssh.SshClientConfig;
 import com.github.woostju.ssh.SshResponse;
-import com.github.woostju.ssh.config.SshClientPoolConfig;
+import com.github.woostju.ssh.pool.SshClientPoolConfig;
 import com.github.woostju.ssh.pool.SshClientWrapper;
 import com.github.woostju.ssh.pool.SshClientsPool;
 
@@ -27,7 +27,7 @@ public class TestSshClientsPool {
 	
 	private SshClientConfig clientConfig;
 	
-	private String host = "54.222.218.191";
+	private String host = "52.81.83.116";
 	
 	@Before
 	public void init() throws IOException {
@@ -48,7 +48,7 @@ public class TestSshClientsPool {
 	public void testSuccess(){
 		// 
 		SyncThreadPool threadPool = SyncThreadPool.newPool();
-		SshClientsPool clientsPool = pool(2, 2, 120, 100);
+		SshClientsPool clientsPool = pool(2, 2, 120*1000, 100*1000);
 		Set<SshClientWrapper> clients = new HashSet<SshClientWrapper>();
 		for (int i = 0; i < 4; i++) {
 			threadPool.addJob("task"+i, ()->{
@@ -79,7 +79,7 @@ public class TestSshClientsPool {
 	public void testDisconnectedIdleclientsSuccess(){
 		// 
 		SyncThreadPool threadPool = SyncThreadPool.newPool();
-		SshClientsPool clientsPool = pool(2, 2, 30, 100);
+		SshClientsPool clientsPool = pool(2, 2, 30*1000, 100*1000);
 		Set<SshClientWrapper> clients = new HashSet<SshClientWrapper>();
 		for (int i = 0; i < 2; i++) {
 			threadPool.addJob("task"+i, ()->{
@@ -121,7 +121,7 @@ public class TestSshClientsPool {
 	public void testUnreachableServerWillNotStayInPoolSuccess(){
 		// 
 		SyncThreadPool threadPool = SyncThreadPool.newPool();
-		SshClientsPool clientsPool = pool(2, 2, 30, 100);
+		SshClientsPool clientsPool = pool(2, 2, 30*1000, 100*1000);
 		Set<SshClientWrapper> clients = new HashSet<SshClientWrapper>();
 		clientConfig.setUsername(clientConfig.getUsername()+"2");
 		for (int i = 0; i < 2; i++) {
@@ -151,7 +151,7 @@ public class TestSshClientsPool {
 	public void testClientsWillBeRecycledSuccess(){
 		// 
 		SyncThreadPool threadPool = SyncThreadPool.newPool();
-		SshClientsPool clientsPool = pool(2, 2, 30, 100);
+		SshClientsPool clientsPool = pool(2, 2, 30*1000, 100*1000);
 		Set<SshClientWrapper> clients = new HashSet<SshClientWrapper>();
 		for (int i = 0; i < 2; i++) {
 			threadPool.addJob("task"+i, ()->{
@@ -232,7 +232,7 @@ public class TestSshClientsPool {
 		// 
 		SyncThreadPool threadPool = SyncThreadPool.newPool();
 		
-		SshClientPoolConfig poolConfig = new SshClientPoolConfig(2, 2, 30, 100);
+		SshClientPoolConfig poolConfig = new SshClientPoolConfig(2, 2, 30*1000, 100*1000);
 		poolConfig.setSshClientImplClass(CustomerSshClient.class);
 		
 		SshClientsPool clientsPool = new SshClientsPool(poolConfig);

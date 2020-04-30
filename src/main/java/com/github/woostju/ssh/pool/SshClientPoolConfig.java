@@ -1,11 +1,10 @@
-package com.github.woostju.ssh.config;
+package com.github.woostju.ssh.pool;
 
 
 import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
 
 import com.github.woostju.ssh.SshClient;
 import com.github.woostju.ssh.SshClientSSHJ;
-import com.github.woostju.ssh.pool.SshClientWrapper;
 
 
 /**
@@ -32,18 +31,18 @@ public class SshClientPoolConfig extends GenericKeyedObjectPoolConfig<SshClientW
 	 * set TestOnReturn to true
 	 * set TestWhileIdle to true
 	 * set JmxEnabled to false 
-	 * @param maxTotal maxTotalPerKey
+	 * @param maxActive maxTotalPerKey
 	 * @param maxIdle maxIdlePerKey
-	 * @param idleTime (seconds) minEvictableIdleTimeMillis * 1000 and timeBetweenEvictionRunsMillis * 1000
-	 * @param maxWaitTime (seconds) maxWaitMillis * 1000
+	 * @param idleTime idle time
+	 * @param maxWaitTime maxWaitMillis
 	 */
-	public SshClientPoolConfig(int maxTotal, int maxIdle, long idleTime, long maxWaitTime){
-		this.setMaxTotalPerKey(maxTotal); 
+	public SshClientPoolConfig(int maxActive, int maxIdle, long idleTime,  long maxWaitTime){
+		this.setMaxTotalPerKey(maxActive);
 		this.setMaxIdlePerKey(maxIdle);
+		this.setMaxWaitMillis(maxWaitTime);
 		this.setBlockWhenExhausted(true);
-		this.setMaxWaitMillis(1000L * maxWaitTime);
-		this.setMinEvictableIdleTimeMillis(1000L * idleTime); 
-		this.setTimeBetweenEvictionRunsMillis(1000L * idleTime);
+		this.setMinEvictableIdleTimeMillis(idleTime); 
+		this.setTimeBetweenEvictionRunsMillis(idleTime);
 		this.setTestOnBorrow(true); 
 		this.setTestOnReturn(true);
 		this.setTestWhileIdle(true); 

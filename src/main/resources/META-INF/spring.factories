@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.anchora.sre.common.conf.HystrixCredentialsContext
+com.github.woostju.ssh.autoconfigure.SshClientPoolAutoConfiguration

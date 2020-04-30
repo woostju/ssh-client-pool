@@ -11,7 +11,7 @@ ssh-client-pool is available from **Maven Central**
 <dependency>
   <groupId>com.github.woostju</groupId>
   <artifactId>ssh-client-pool</artifactId>
-  <version>1.0.0-RELEASE</version>
+  <version>1.0.1-RELEASE</version>
 </dependency>
 ```
 
@@ -24,30 +24,13 @@ Anyone who wants to cache the connected clients in an object pool, to reuse the 
 
 ### How do I use this?
 
-Register it in your SpringBoot configuration class:
+The SshClientsPool is auto-configured, use it directly as:
 
 ```java
-@Bean
-public SshClientsPool sshclientpool() {
-	return new SshClientsPool();
-}
-```
-
-Then in your service class, use it as:
-
-```java
-import com.github.woostju.ssh.SshClientConfig;
-import com.github.woostju.ssh.SshResponse;
-import com.github.woostju.ssh.config.SshClientPoolConfig;
-import com.github.woostju.ssh.pool.SshClientWrapper;
-import com.github.woostju.ssh.pool.SshClientsPool;
-
-//---------------------------------------
 
 @Autowired
 SshClientsPool pool;
 
-//---------------------------------------
 public void echo(){
 	SshClientConfig clientConfig = new SshClientConfig("hostip", 22, "username", "password", null);
 	SshClientWrapper client = pool.client(clientConfig);
@@ -58,8 +41,17 @@ public void echo(){
 ```
 
 ### Can I configure the pool?
-You can create SshClientsPool with config:
 
+You can configure SshClientsPool in your SpringBoot properties file as:
+
+```
+woostju.ssh-client-pool.maxActive=16
+woostju.ssh-client-pool.maxIdle=16
+woostju.ssh-client-pool.idleTime=20000
+woostju.ssh-client-pool.maxWait=20000
+```
+
+what's more, you can also register the SshClientsPool yourself:
 
  ```java
 @Bean
@@ -77,7 +69,6 @@ public SshClientsPool sshclientpool() {
 	poolConfig.setTestWhileIdle(true);
 	poolConfig.setJmxEnabled(false); //disbale jmx
 	
-	poolConfig.setSshClientImplClass(YourSshClientImpl.class) // if you do not want to use sshj, pass this class
 	return new SshClientsPool(poolConfig);
 }
 ```
