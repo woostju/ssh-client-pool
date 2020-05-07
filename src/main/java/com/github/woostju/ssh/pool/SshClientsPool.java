@@ -49,12 +49,12 @@ public class SshClientsPool extends GenericKeyedObjectPool<SshClientConfig, SshC
 	/**
 	 * 
 	 * @param maxActive max clients in pool
-	 * @param maxIdle max idle clients in pool
+	 * @param maxIdle  max idle clients in pool
 	 * @param idleTime idle time clients live in the pool
 	 * @param maxWaitTime wait time when request block
 	 */
-	public SshClientsPool(int maxActive, int idle, long idleTime, long maxWaitTime) {
-		this(new SshClientPoolConfig(maxActive, idle, idleTime, maxWaitTime));
+	public SshClientsPool(int maxActive, int maxIdle, long idleTime, long maxWaitTime) {
+		this(new SshClientPoolConfig(maxActive, maxIdle, idleTime, maxWaitTime));
 	}
 	
 	/**
