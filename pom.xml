@@ -29,7 +29,6 @@
 		<connection>scm:git@github.com:woostju/ssh-client-pool.git</connection>
 		<developerConnection>scm:git@github.com:woostju/ssh-client-pool.git</developerConnection>
 		<url>https://github.com/woostju/ssh-client-pool.git</url>
-		<tag>v1.0.0-RELEASE</tag>
 	</scm>
 
 
