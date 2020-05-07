@@ -30,10 +30,10 @@ public class SshClientsPool extends GenericKeyedObjectPool<SshClientConfig, SshC
 	private SshClientPoolConfig poolConfig;
 	
 	/**
-	 * maxActive 20, maxIdle 20, minIdle 20, maxWaitMillis 40 seconds
+	 * maxActive 20, maxIdle 20,  maxWaitMillis 40 seconds
 	 */
 	public SshClientsPool() {
-		this(20, 20, 20, 40*1000l);
+		this(20, 20, 120*1000l, 120*1000l);
 	}
 	
 	/**
@@ -85,6 +85,13 @@ public class SshClientsPool extends GenericKeyedObjectPool<SshClientConfig, SshC
 		return objects.get(config.toString());
 	}
 	
+	@Override
+	public SshClientWrapper borrowObject(SshClientConfig key) throws Exception {
+		SshClientWrapper object = super.borrowObject(key);
+		logger.debug("borrow object:" + object);
+		return object;
+	}
+	
 }
 
 class SshClientsObjectFactory extends BaseKeyedPooledObjectFactory<SshClientConfig, SshClientWrapper> implements SshClientEventListener{
@@ -103,7 +110,7 @@ class SshClientsObjectFactory extends BaseKeyedPooledObjectFactory<SshClientConf
 
 	@Override
 	public void destroyObject(SshClientConfig key, PooledObject<SshClientWrapper> p) throws Exception {
-		logger.debug("销毁对象 "+p);
+		logger.debug("destroy object: "+p);
 		p.getObject().setEventListener(null);
 		p.getObject().disconnect();
 	}
@@ -126,6 +133,7 @@ class SshClientsObjectFactory extends BaseKeyedPooledObjectFactory<SshClientConf
 		} catch (SshException e) {
 			throw new RuntimeException("create ssh client fail");
 		}
+		logger.debug("sshclient created: "+wrapper);
 		return wrapper;
 	}
 
